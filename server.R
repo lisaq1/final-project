@@ -114,4 +114,57 @@ my.server <- function(input, output){
         )
       
   })
+  
+  output$us_scatter <- renderPlot({
+    data <- select(df, Country, state, Age, seek_help, care_options) %>% 
+      filter(Age < 100, Age > 0, Country == "United States") 
+      ## Filter out outliers such as 99999 years old
+    data$seek_help[data$seek_help == "Don't know"] = "No" 
+    
+    data <- group_by(data, state, seek_help) %>%
+      summarize(average_age = mean(Age), count = n())
+    #data <- filter(data, Country == input$place)
+    
+    
+    ggplot(data = data) +
+      geom_point(mapping = aes(x = average_age, y = state, color = seek_help, size = count)) +
+      theme(
+        panel.background = element_rect(fill = "white",
+                                        colour = "white",
+                                        size = 0.5, linetype = "dotted"),
+        panel.grid.major = element_line(size = 0.25, linetype = 'solid',
+                                        colour = "gray"),
+        panel.grid.minor = element_line(size = 0.25, linetype = 'dotted',
+                                        colour = "lightgray")
+      )
+  })
+  
+  output$us_bar <- renderPlotly({
+    survey.data <- select(df, Country, state, Age, seek_help, care_options) %>% 
+      filter(Age < 100, Age > 0, Country == "United States") 
+      ## Filter out outliers such as 99999 years old
+    
+    survey.data.1 <- group_by(survey.data, seek_help, care_options) %>%
+      summarize(count = n())
+    care_options <- c("Not Sure", "No", "Yes")
+    survey.data.2 <- data.frame(care_options)
+    # values = survey.data.1$count
+    value1 = survey.data.1$count[survey.data.1$seek_help == "No"]
+    value2 = survey.data.1$count[survey.data.1$seek_help == "Don't know"]
+    value3 = survey.data.1$count[survey.data.1$seek_help == "Yes"]
+    survey.data.2$No_help <- value1
+    survey.data.2$Not_sure <- value2
+    survey.data.2$Yes_help <- value3
+    
+    # data$seek_help[data$seek_help == "Don't know"] = "No" 
+    
+    #ggplot(data = survey.data, aes(x = care_options, fill = seek_help)) + 
+    #  geom_bar() + scale_fill_brewer(palette = "Diverging") 
+    
+    plot_ly(survey.data.2, x = ~care_options, y = ~No_help, type = 'bar', name = 'No help seeked') %>%
+      add_trace(y = ~Not_sure, name = 'Not sure') %>%
+      add_trace(y = ~Yes_help, name = 'Help seeked') %>%
+      layout(yaxis = list(title = 'Count'), barmode = 'group')
+    
+  })
 }

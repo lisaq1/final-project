@@ -1,4 +1,5 @@
 library("shiny")
+library("plotly")
 
 my.ui <- fluidPage(
     mainPanel(
@@ -14,7 +15,7 @@ my.ui <- fluidPage(
                                                 shown as well."), br(),
                          tableOutput("table"), br(), p("The table shows a breakdown on where all the data came
                                                  from.")),
-                tabPanel("Specific Locations", fluidRow(selectInput("place", "Country of Interest", 
+                tabPanel("Countries", fluidRow(selectInput("place", "Country of Interest", 
                               c("Australia", "Austria", "Bahamas", "Belgium", "Bosnia and Herzegovina",
                                 "Brazil", "Bulgaria", "Canada", "China", "Colombia", "Costa Rica", "Croatia",
                                 "Czech Republic", "Denmark", "Finland", "France", "Georgia", "Germany",
@@ -22,6 +23,7 @@ my.ui <- fluidPage(
                                 "Mexico", "Moldova", "Netherlands", "New Zealand", "Nigeria", "Norway",
                                 "Philippines", "Poland", "Portugal", "Romania", "Russia", "Singapore", "Slovenia",
                                 "South Africa", "Spain", "Sweden", "Switzerland", "Thailand", "United Kingdom",
-                                "United States", "Uruguay")), plotOutput("scatter_spec"))))
+                                "United States", "Uruguay")), plotOutput("scatter_spec"))),
+                tabPanel("United States", plotOutput("us_scatter"), plotlyOutput("us_bar")))
   )
 )
