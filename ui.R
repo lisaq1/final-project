@@ -8,7 +8,7 @@ library("plotly")
 # Define UI for application that draws a histogram
 ui <- navbarPage("Mental Health in Tech",
   tabPanel("Introduction",
-        wellPanel(
+        mainPanel(
         h4(strong("Overview")),
         p("Mental health of tech workers is an important topic because...."),
         br(),
