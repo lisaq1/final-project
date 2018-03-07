@@ -172,7 +172,7 @@ ui <- navbarPage("Mental Health in Tech",
                              br(), 
                              h4("Specific Country Age v. Company Offering Care Options"), 
                              fluidRow(helpText("Select a country of interest (the first four countries have more documented 
-                                        data than others - the United States, United Kingdom, Canada, and Germany consist 
+                                        data than others - the United States (second tab), United Kingdom, Canada, and Germany consist 
                                         a majority of the data)"), 
                                       selectInput("place", "Country of Interest",
                                                   c("United Kingdom", "Canada", "Germany", "Australia", "Austria", 
