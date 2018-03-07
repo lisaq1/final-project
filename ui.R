@@ -174,7 +174,7 @@ ui <- navbarPage("Mental Health in Tech",
                                         data than others - the United States, United Kingdom, Canada, and Germany consist 
                                         a majority of the data)"), 
                                       selectInput("place", "Country of Interest",
-                                                  c("United States", "United Kingdom", "Canada", "Germany", "Australia", "Austria", 
+                                                  c("United Kingdom", "Canada", "Germany", "Australia", "Austria", 
                                                     "Bahamas", "Belgium", "Bosnia and Herzegovina", "Brazil", "Bulgaria", "China", 
                                                     "Colombia", "Costa Rica", "Croatia", "Czech Republic", "Denmark", "Finland", 
                                                     "France", "Georgia", "Greece", "Hungary", "India", "Ireland", "Israel", "Italy", 

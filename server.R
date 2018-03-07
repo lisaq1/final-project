@@ -5,7 +5,7 @@ library("dplyr")
 
 # If opening zip
 # source("ReadingKagg.R")
-df <- read.csv("survey.csv", stringsAsFactors = FALSE)
+df <- read.csv("data/survey.csv", stringsAsFactors = FALSE)
 
 my.server <- function(input, output){
   
