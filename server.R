@@ -2,12 +2,33 @@ library("plotly")
 library("shiny")
 library("ggplot2")
 library("dplyr")
+library("maps")
 
 # If opening zip
 # source("ReadingKagg.R")
 df <- read.csv("data/survey.csv", stringsAsFactors = FALSE)
 
 my.server <- function(input, output){
+  
+  output$worldMap <- renderPlot({
+    data <- select(df, Country)
+    data <- group_by(df, Country) %>%
+      summarize(respondents = n())
+    ## need to account for the weirdly named ones
+    data$Country[data$Country == "Bahamas, The"] = "Bahamas"
+    data$Country[data$Country == "United States"] = "USA"
+    data$Country[data$Country == "United Kingdom"] = "UK"
+    map <- map_data("world")
+    names <- c("long", "lat", "group", "order", "Country", "subregion")
+    colnames(map) = names
+    data <- left_join(data, map)
+    
+    ggplot(data = data) +
+      borders("world", fill = "black", colour = "grey50")+ 
+      geom_polygon(aes(x = long, y = lat, group = group, fill = respondents)) +
+      coord_quickmap() +
+      labs(title = "World Map of Collected Data Density")
+  })
   
   worldWideFilter <- function(){
     data <- select(df, Country, Age, seek_help, care_options) %>% 
@@ -16,7 +37,6 @@ my.server <- function(input, output){
     
     return(data)
   }
-  
   
   output$scatterWorld <- renderTable({
     if(input$checkbox1 == TRUE){

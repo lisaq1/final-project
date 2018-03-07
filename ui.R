@@ -12,7 +12,10 @@ ui <- navbarPage("Mental Health in Tech",
         h4(strong("Overview")),
         p("Mental health of tech workers is an important topic because...."),
         br(),
-        
+        plotOutput("worldMap"),
+        p(em("Caption: The above plot shows where the data comes from. As shown above, most of the data came from the 
+             United States and some from around the world. The black portions represent the parts of the world in which
+             the survey was NOT conducted.")),
         h4(strong("Research")),
         p("In considering the topic of mental health of tech employees, we reviewed the following sources:"),
         
@@ -33,8 +36,6 @@ ui <- navbarPage("Mental Health in Tech",
           mental health history, and attitudes and experiences towards mental health and work.
           "),
         br(),
-        
-        
         h4(strong("Questions")),
         p("We focused our analysis of this dataset on the following questions:"),
         br(),
