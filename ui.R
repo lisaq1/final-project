@@ -183,7 +183,7 @@ ui <- fluidPage(
                  p("This information could be potentianlly useful for employers and those seeking jobs in the near future. Employers may use
                    this data to recognize that primarily older prospective employees may have company care options as a top priority when 
                    looking for jobs whereas younger employees may not think as much regarding company care options (mainly in the US, this trend
-                   is prevalent).")
+                   is prevalent) as they are less likely to seek out mental health help. ")
                  ), 
                mainPanel(
                  tabsetPanel(tabPanel("World Wide Info", 
