@@ -320,11 +320,13 @@ ui <- fluidPage(
                                   p("Instructions - no options, static"),
                                   br(),
                                   plotlyOutput("scatter_leave_world"),
+                                  plotlyOutput("world_bar_leave"),
                                   br(),
+                                  plotlyOutput("bar_leave2"),
                                   hr()
                                 ),
                                 tabPanel(
-                                  "Bar Graph",
+                                  "United States",
                                   
                                   br(),
                                   h4(strong("Work Interference & Ability to take Mental Health Leave")),
@@ -333,31 +335,11 @@ ui <- fluidPage(
                                   br(),
                                   hr(),
                                   br(),
-                                  h4("Country Data"),
-                                  p("intro for country selected"),
-                                  br(),
-                                  p("Instructions - info on top 4 countries"),
-                                  br(),
-                                  selectInput(
-                                    "country_leave2", 
-                                    "Select a Country",
-                                    choices = c("United States", "United Kingdom", "Canada", "Germany", "Australia", "Austria", 
-                                                "Bahamas", "Belgium", "Bosnia and Herzegovina", "Brazil", "Bulgaria", "China", 
-                                                "Colombia", "Costa Rica", "Croatia", "Czech Republic", "Denmark", "Finland", 
-                                                "France", "Georgia", "Greece", "Hungary", "India", "Ireland", "Israel", "Italy", 
-                                                "Japan", "Latvia", "Mexico", "Moldova", "Netherlands", "New Zealand", "Nigeria", 
-                                                "Norway", "Philippines", "Poland", "Portugal", "Romania", "Russia", "Singapore", 
-                                                "Slovenia", "South Africa", "Spain", "Sweden", "Switzerland", "Thailand", "Uruguay")
-                                  ),    
-                                  br(),
+                                  plotlyOutput("us_leave1"),
                                   plotlyOutput("bar_leave1"),
                                   br(),
                                   hr(),
                                   br(),
-                                  h4("Worldwide Data"),
-                                  p("intro for country selected"),
-                                  br(),
-                                  plotlyOutput("bar_leave2"),
                                   hr()
                                 )
                               )

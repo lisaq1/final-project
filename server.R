@@ -23,7 +23,6 @@ my.server <- function(input, output){
     names <- c("long", "lat", "group", "order", "Country", "subregion")
     colnames(map) = names
     data <- left_join(data, map)
-    
     ggplot(data = data) +
       borders("world", fill = "black", colour = "grey50")+ 
       geom_polygon(aes(x = long, y = lat, group = group, fill = respondents)) +
@@ -240,18 +239,74 @@ my.server <- function(input, output){
     plot_ly(data = data3, x = ~Age, y = ~work_interfere, color = ~leave, size = ~count, colors = "Set1", type = 'scatter',
             text = ~paste(paste0("Age: ", Age), paste0("\nNumber of respondents: ", count), paste0("\nMedical Leave: ", leave),
                           sep = "<br />"), hoverinfo = "text") %>%
+      layout(title = paste('(USA) Work Interference by Age \n& Ability to take Medical Leave\n'),
+             yaxis = list(title = 'Work Interference'), margin=list(l = 100), yaxis=list(tickprefix="\t"))
+  })
+  
+  output$us_leave1 <- renderPlotly({
+    data2 <- worldWideFilter2()
+    data2 <- filter(data2, Country == "United States")
+    data2 <- group_by(data2, work_interfere, leave, Age) %>%
+      summarize(count = n())
+    
+    plot_ly(data = data2, x = ~Age, y = ~work_interfere, color = ~leave, size = ~count, colors = "Set1", type = 'scatter',
+            text = ~paste(paste0("Age: ", Age), paste0("\nNumber of respondents: ", count), paste0("\nMedical Leave: ", leave),
+                          sep = "<br />"), hoverinfo = "text") %>%
       layout(title = paste('Work Interference by Age \n& Ability to take Medical Leave\n'),
              yaxis = list(title = 'Work Interference'), margin=list(l = 100), yaxis=list(tickprefix="\t"))
   })
   
-  #  ###### Bar Graph - Select Country - output: bar_leave1
-  #  
-  #  filter_data3 <- reactive({
-  #    data <- worldWideFilter2()
-  #    data <- filter(data, Country == input$country_leave2) #input from dropdown on this page
-  #    data <- group_by(data, work_interfere, leave, Age) %>%
-  #      summarize(count = n())
-  #  })
+  ###### Bar Graph - Select Country - output: bar_leave1
+  
+  output$bar_leave1 <- renderPlotly({
+    data <- worldWideFilter2()
+    data <- filter(data, Country == "United States") #input from dropdown on this page
+    data <- group_by(data, work_interfere, leave) %>%
+      summarize(count = n())
+    
+    data <- filter(data, !is.na(work_interfere))
+    interference <- c("Never", "Often", "Rarely", "Sometimes")
+    dont_know = data$count[data$leave == "Don't know"]
+    somewhat_difficult = data$count[data$leave == "Somewhat difficult"]
+    somewhat_easy = data$count[data$leave == "Somewhat easy"]
+    very_difficult = data$count[data$leave == "Very difficult"]
+    very_easy = data$count[data$leave == "Very easy"]
+    data.1 <- data.frame(interference, very_difficult, somewhat_difficult,
+                         somewhat_easy, very_easy)
+    plot_ly(data.1, x = ~interference, y = ~dont_know, type = 'bar', name = 'Not Sure') %>%
+      add_trace(y = ~very_difficult, name = 'Very Difficult') %>%
+      add_trace(y = ~somewhat_difficult, name = 'Somewhat Difficult') %>%
+      add_trace(y = ~somewhat_easy, name = 'Somewhat Easy') %>%
+      add_trace(y = ~very_easy, name = 'Very Easy') %>%
+      layout(title = 'Country View in Depth View of Work Interference vs. Leave Difficulty',
+             xaxis = list(title = 'Work Interference Level'),
+             yaxis = list(title = 'Leave Difficulty (# respondents)'), width = 800, height = 500)
+  })
+  
+  output$bar_leave2 <- renderPlotly({
+    data <- worldWideFilter2()
+    data <- group_by(data, work_interfere, leave) %>%
+      summarize(count = n())
+    
+    data <- filter(data, !is.na(work_interfere))
+    interference <- c("Never", "Often", "Rarely", "Sometimes")
+    dont_know = data$count[data$leave == "Don't know"]
+    somewhat_difficult = data$count[data$leave == "Somewhat difficult"]
+    somewhat_easy = data$count[data$leave == "Somewhat easy"]
+    very_difficult = data$count[data$leave == "Very difficult"]
+    very_easy = data$count[data$leave == "Very easy"]
+    data.1 <- data.frame(interference, very_difficult, somewhat_difficult,
+                         somewhat_easy, very_easy)
+    plot_ly(data.1, x = ~interference, y = ~dont_know, type = 'bar', name = 'Not Sure') %>%
+      add_trace(y = ~very_difficult, name = 'Very Difficult') %>%
+      add_trace(y = ~somewhat_difficult, name = 'Somewhat Difficult') %>%
+      add_trace(y = ~somewhat_easy, name = 'Somewhat Easy') %>%
+      add_trace(y = ~very_easy, name = 'Very Easy') %>%
+      layout(title = 'Country View in Depth View of Work Interference vs. Leave Difficulty',
+             xaxis = list(title = 'Work Interference Level'),
+             yaxis = list(title = 'Leave Difficulty (# respondents)'), width = 800, height = 500)
+  })
+
   #  
   #    filterLeave <- function(){
   #      survey.data.leave <- filter_data3()  # get filtered data from Reactive function for input
