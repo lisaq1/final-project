@@ -10,6 +10,7 @@ df <- read.csv("data/survey.csv", stringsAsFactors = FALSE)
 
 my.server <- function(input, output){
   
+  # Introduction Map! Shows where the data came from
   output$worldMap <- renderPlot({
     data <- select(df, Country)
     data <- group_by(df, Country) %>%
@@ -30,6 +31,9 @@ my.server <- function(input, output){
       labs(title = "World Map of Collected Data Density")
   })
   
+  ##### TAB: SEEKING HELP & CARE OPTIONS
+  
+  # Filters the data that was commonly used in the World Wide view
   worldWideFilter <- function(){
     data <- select(df, Country, Age, seek_help, care_options) %>% 
       filter(Age < 100, Age > 0) ## Filter out outliers such as 99999 years old
@@ -38,6 +42,7 @@ my.server <- function(input, output){
     return(data)
   }
   
+  # Renders the table of data used to create the World Wide scatter plot upon request
   output$scatterWorld <- renderTable({
     if(input$checkbox1 == TRUE){
       data <- worldWideFilter()
@@ -47,6 +52,7 @@ my.server <- function(input, output){
     }
   })
   
+  # Creates the scatter plot of ave age v. country with influence of seeking help (World Wide)
   output$scatter <- renderPlotly({
     data <- worldWideFilter()
     data$seek_help[data$seek_help == "Don't know"] = "No" 
@@ -62,6 +68,7 @@ my.server <- function(input, output){
     
   })
   
+  # Renders the table used to create the World Wide bar graph of seeking help and care options upon request
   output$barWorld<- renderTable({
     if(input$checkbox2 == TRUE){
       survey.data <- worldWideFilter()
@@ -70,6 +77,21 @@ my.server <- function(input, output){
     }
   })
   
+  # Creates the bar graph of seeking help and care options (World Wide)
+  output$bar <- renderPlotly({
+    survey.data.2 <- filterUSBar();
+    
+    plot_ly(survey.data.2, x = ~care_options, y = ~No_help, type = 'bar', name = 'No help seeked') %>%
+      add_trace(y = ~Not_sure, name = 'Not sure') %>%
+      add_trace(y = ~Yes_help, name = 'Help seeked') %>%
+      layout(yaxis = list(title = 'Count'), xaxis = list(title = 'Company Offered Care Options'),
+             title = 'World Wide View of Seeking Mental Health Help and Offered Care Options', 
+             barmode = 'group') 
+    
+    
+  })
+  
+  # Renders the data used to create the US scatter plot by the states 
   output$scatterUS <- renderTable({
     if(input$checkbox3){
       data <- select(df, Country, state, state_full, Age, seek_help, care_options) %>% 
@@ -82,6 +104,7 @@ my.server <- function(input, output){
     }
   })
   
+  # Creates the scatter plot by state for the US by age v. states while showing a trend of seeking help and age
   output$us_scatter <- renderPlotly({
     data <- select(df, Country, state, state_full, Age, seek_help, care_options) %>% 
       filter(Age < 100, Age > 0, Country == "United States") 
@@ -90,7 +113,6 @@ my.server <- function(input, output){
     
     data <- group_by(data, state, state_full, seek_help) %>%
       summarize(average_age = mean(Age), count = n())
-    
     
     plot_ly(data = data, x = ~average_age, y = ~state, color = ~seek_help, size = ~count, colors = "Set1", type = 'scatter', 
             text = ~paste(state_full, paste0("Average Age: ", round(average_age, digits = 1), 
@@ -102,6 +124,7 @@ my.server <- function(input, output){
     
   })
   
+  # Filters the data to the desired data for the US Bar Graph of seeking help and care options
   filterUSBar <- function(){
     survey.data <- worldWideFilter()
     
@@ -119,25 +142,14 @@ my.server <- function(input, output){
     return(survey.data.2)
   }
   
+  # Renders the data used to create the US bar graph
   output$barUS <- renderTable({
     if(input$checkbox4 == TRUE){
       data <- filterUSBar();
     }
   })
   
-  output$bar <- renderPlotly({
-    survey.data.2 <- filterUSBar();
-    
-    plot_ly(survey.data.2, x = ~care_options, y = ~No_help, type = 'bar', name = 'No help seeked') %>%
-      add_trace(y = ~Not_sure, name = 'Not sure') %>%
-      add_trace(y = ~Yes_help, name = 'Help seeked') %>%
-      layout(yaxis = list(title = 'Count'), xaxis = list(title = 'Company Offered Care Options'),
-             title = 'World Wide View of Seeking Mental Health Help and Offered Care Options', 
-             barmode = 'group') 
-    
-    
-  })
-  
+  # Creates the US bar graph showing the relationship between seeking help and offered care options
   output$us_bar <- renderPlotly({
     survey.data <- select(df, Country, state, Age, seek_help, care_options) %>% 
       filter(Age < 100, Age > 0, Country == "United States") 
@@ -163,7 +175,7 @@ my.server <- function(input, output){
              yaxis = list(title = 'Count'), width = 800, height = 500)
   })
   
-  
+  # Makes the input of Country in the third tab reactive
   filter_data <- reactive({
     data <- worldWideFilter()
     data <- filter(data, Country == input$place)
@@ -171,6 +183,7 @@ my.server <- function(input, output){
       summarize(count = n())
   })
   
+  # Creates a scatter plot of the country of interest of its trend in age, seeking help, and offered care options
   output$scatter_spec <- renderPlotly({
     data1 <- filter_data()
     
@@ -181,5 +194,138 @@ my.server <- function(input, output){
              yaxis = list(title = 'Company Offered Care Options'), margin=list(l = 100), yaxis=list(tickprefix="\t"))
   })
   
+  ######## Tab: Work Interference & Medical Leave
   
+  # select from dataset: Country, Age, work_intereference, leave
+  
+  worldWideFilter2 <- function(){
+    data <- select(df, Country, Age, work_interfere, leave) %>% 
+      filter(Age < 100, Age > 0) ## Filter out outliers such as 99999 years old
+    data$Country[data$Country == "Bahamas, The"] = "Bahamas"
+    
+    return(data)
+  }
+  
+  ## Scatterplot - Select country 
+  
+  filter_data2 <- reactive({
+    data <- worldWideFilter2()
+    data <- filter(data, Country == input$country_leave)
+    data <- group_by(data, work_interfere, leave, Age) %>%
+      summarize(count = n())
+  })
+  
+  output$scatter_leave <- renderPlotly({
+    data2 <- filter_data2()
+    
+    plot_ly(data = data2, x = ~Age, y = ~work_interfere, color = ~leave, size = ~count, colors = "Set1", type = 'scatter',
+            text = ~paste(paste0("Age: ", Age), paste0("\nNumber of respondents: ", count), paste0("\nMedical Leave: ", leave),
+                          sep = "<br />"), hoverinfo = "text") %>%
+      layout(title = paste('Work Interference by Age \n& Ability to take Medical Leave\n'),
+             yaxis = list(title = 'Work Interference'), margin=list(l = 100), yaxis=list(tickprefix="\t"))
+  })
+  
+  ###  Scatterplot - Worldwide
+  
+  filter_data3 <- reactive({
+    data <- worldWideFilter2()
+    #data <- filter(data, Country == input$country_leave)
+    data <- group_by(data, work_interfere, leave, Age) %>%
+      summarize(count = n())
+  })
+  
+  output$scatter_leave_world <- renderPlotly({
+    data3 <- filter_data3()
+    
+    plot_ly(data = data3, x = ~Age, y = ~work_interfere, color = ~leave, size = ~count, colors = "Set1", type = 'scatter',
+            text = ~paste(paste0("Age: ", Age), paste0("\nNumber of respondents: ", count), paste0("\nMedical Leave: ", leave),
+                          sep = "<br />"), hoverinfo = "text") %>%
+      layout(title = paste('Work Interference by Age \n& Ability to take Medical Leave\n'),
+             yaxis = list(title = 'Work Interference'), margin=list(l = 100), yaxis=list(tickprefix="\t"))
+  })
+  
+  #  ###### Bar Graph - Select Country - output: bar_leave1
+  #  
+  #  filter_data3 <- reactive({
+  #    data <- worldWideFilter2()
+  #    data <- filter(data, Country == input$country_leave2) #input from dropdown on this page
+  #    data <- group_by(data, work_interfere, leave, Age) %>%
+  #      summarize(count = n())
+  #  })
+  #  
+  #    filterLeave <- function(){
+  #      survey.data.leave <- filter_data3()  # get filtered data from Reactive function for input
+  #      survey.data.1.leave <- group_by(survey.data.leave, leave, work_interfere) %>%
+  #        summarize(count = n())
+  #      work_interfere <- c("Never", "Rarely", "Sometimes", "Often")
+  #      survey.data.2.leave <- data.frame(work_interfere)
+  #      
+  #      value1 = survey.data.1.leave$count[survey.data.1.leave$leave == "Very easy"]
+  #      value2 = survey.data.1.leave$count[survey.data.1.leave$leave == "Somewhat easy"]
+  #      value3 = survey.data.1.leave$count[survey.data.1.leave$leave == "Somewhat difficult"]
+  #      value4 = survey.data.1.leave$count[survey.data.1.leave$leave == "Very difficult"]
+  #      value5 = survey.data.1.leave$count[survey.data.1.leave$leave == "Don't know"]
+  #      survey.data.2.leave$v_easy <- value1
+  #      survey.data.2.leave$s_easy <- value2
+  #      survey.data.2.leave$s_diff <- value3
+  #      survey.data.2.leave$v_diff <- value4
+  #      survey.data.2.leave$d_know <- value5
+  #      return(survey.data.2)
+  #    }
+  #    #static bar -- change to world 
+  #    #plotlyOutput("bar_leave")
+  #    
+  #    output$bar_leave2 <- renderPlotly({
+  #      survey.data.2.leave <- filterLeave();
+  #      
+  #      plot_ly(survey.data.2.leave, x = ~care_options, y = ~v_easy, type = 'bar', name = 'Very Easy') %>%
+  #        add_trace(y = ~s_easy, name = 'Somewhat Easy') %>%
+  #        add_trace(y = ~s_diff, name = 'Somewhat Difficult') %>%
+  #        add_trace(y = ~v_diff, name = 'Very Difficult') %>%
+  #        add_trace(y = ~d_know , name = 'Does Not Know') %>%
+  #        layout(yaxis = list(title = 'Count'), xaxis = list(title = 'Work Interference'),
+  #               title = 'Work Interference & Ability to take Medical Leave', 
+  #               barmode = 'group') 
+  #    })
+  #  
+  #  #### Worldwide Data (static, no input, data for all countries) - output: bar_leave2
+  #  
+  #  filterLeave <- function(){
+  #    survey.data.leave <- worldWideFilter2()
+  #    
+  #    survey.data.1.leave <- group_by(survey.data.leave, leave, work_interfere) %>%
+  #      summarize(count = n())
+  #    work_interfere <- c("Never", "Rarely", "Sometimes", "Often")
+  #    survey.data.2.leave <- data.frame(work_interfere)
+  #    
+  #    value1 = survey.data.1.leave$count[survey.data.1.leave$leave == "Very easy"]
+  #    value2 = survey.data.1.leave$count[survey.data.1.leave$leave == "Somewhat easy"]
+  #    value3 = survey.data.1.leave$count[survey.data.1.leave$leave == "Somewhat difficult"]
+  #    value4 = survey.data.1.leave$count[survey.data.1.leave$leave == "Very difficult"]
+  #    value5 = survey.data.1.leave$count[survey.data.1.leave$leave == "Don't know"]
+  #    survey.data.2.leave$v_easy <- value1
+  #    survey.data.2.leave$s_easy <- value2
+  #    survey.data.2.leave$s_diff <- value3
+  #    survey.data.2.leave$v_diff <- value4
+  #    survey.data.2.leave$d_know <- value5
+  #    return(survey.data.2)
+  #  }
+  #  
+  #  output$bar_leave2 <- renderPlotly({
+  #    survey.data.2.leave <- filterLeave();
+  #    
+  #    plot_ly(survey.data.2.leave, x = ~care_options, y = ~v_easy, type = 'bar', name = 'Very Easy') %>%
+  #      add_trace(y = ~s_easy, name = 'Somewhat Easy') %>%
+  #      add_trace(y = ~s_diff, name = 'Somewhat Difficult') %>%
+  #      add_trace(y = ~v_diff, name = 'Very Difficult') %>%
+  #      add_trace(y = ~d_know , name = 'Does Not Know') %>%
+  #      layout(yaxis = list(title = 'Count'), xaxis = list(title = 'Work Interference'),
+  #             title = 'Work Interference & Ability to take Medical Leave', 
+  #             barmode = 'group') 
+  #    
+  # 
+  #  })
+  # 
+  # ############ 
+  #  
 }
