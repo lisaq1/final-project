@@ -42,8 +42,9 @@ ui <- fluidPage(
                               img(src="OSMI.png", width = "75%"),
                               br(),  
                               br(),
-                              a(href="https://osmihelp.org/research",
-                                "Open Source Mental Illness")
+                              p(a(href="https://osmihelp.org/research",
+                                "Open Source Mental Illness")),
+                              a("Kaggle Data", href = "kaggle.com/osmi/mental-health-in-tech-survey")
                               
                             ),
                             mainPanel(  
@@ -196,7 +197,7 @@ ui <- fluidPage(
                                             have as many data points; however, it can still be seen that many respondents replied with
                                             no to the question of seeking help. From this scatter plot, It is not entirely clear if age
                                             has a correlation with seeking help, but that could potentially be due little collected data
-                                            in each specific country (unlike in the US data where there is a clear relationship)"), 
+                                            in each specific country (unlike in the US data where there is a clear relationship)."), 
                                           tableOutput("scatterWorld"),
                                           br(),
                                           plotlyOutput("bar"), 
@@ -219,14 +220,14 @@ ui <- fluidPage(
                                             no/unsure of seeking help (like the first tab scatter plot those unsure of seeking help or have not
                                             were grouped in the same category for the purpose of analysis). The most respondents came from California,
                                             (95 replied no/unsure - ave age: 31.8 y.o. , and 43 replied yes - ave age: 36.1 y.o.). Many of the
-                                            other states also show this similar result."),
+                                            other states also show this trend."),
                                           tableOutput("scatterUS"),
                                           br(),
                                           plotlyOutput("us_bar"),
                                           br(), br(), br(), br(),
                                           fluidRow(checkboxInput("checkbox4", label = "Display Bar Graph Data", value = FALSE)),
                                           p(em("Side Note: same as the bar graph in the first tab, the data was separated (no's and unsure's) to
-                                               better recognize the relationships between the two responses")),
+                                               better recognize the relationships between the two seeking help and offered care")),
                                           p("As expected, those without clear information on if their respective companies had health care options,
                                             have not seeked help. However, when the respondents were clearly informed, those who have seeked help
                                             made a significant jump (from 33 (not informed) and 26 (unsure) to 128 (informed)."), 
@@ -361,10 +362,30 @@ ui <- fluidPage(
                                        h4(strong("References")),  
                                        br(),
                                        p("The following sources were used this presentation:"),
-                                       p("source1"),# enter sources for research on topic, and for each question.
-                                       p("source2"),
-                                       p("source3"),
-                                       p("source4")
+                                       br(),
+                                       p("The Data:"),
+                                       p(a("Kaggle Link", href = "https://www.kaggle.com/osmi/mental-health-in-tech-survey")),
+                                       p("Open Source Mental Illness (OSMI) [Group that conducted the survey]:"),
+                                       p(a("Open Source Mental Illness Link", href = "https://osmihelp.org/research/")),
+                                       br(),
+                                       p(em("The following reports were used to better understand how the data was collected")),
+                                       p("Basic Report of 2016 Survey from OSMI:"),
+                                       p(a("2016 Report", href = "https://osmi.typeform.com/report/Ao6BTw/U76z")),
+                                       p("Basic Report of 2014 Survey from OSMI:"),
+                                       p(a("2014 Report", href = "https://docs.google.com/forms/d/1FqpxZXORRNDQ4niSeqLx0Qy2VfUod_qlAvpnOyTEB9k/viewanalytics")),
+                                       br()
+                                     ),
+                                     mainPanel(
+                                       h4(strong("Techinical Description")),
+                                       h5("Libraries Used"),
+                                       p("To create the visual representations we used shiny , plotly , ggplot2, and maps.
+                                         For the in depth data manipulation we used dplyr."),
+                                       p(em("List of library links:")),
+                                       p(a("shiny", href = "http://shiny.rstudio.com/", target = "shiny")),
+                                       p(a("plotly", href = "https://plot.ly/r/", target = "plotly")),
+                                       p(a("ggplot2", href = "https://www.statmethods.net/advgraphs/ggplot2.html", target = "ggplot2")),
+                                       p(a("maps", href = "https://cran.r-project.org/web/packages/maps/maps.pdf", target = "maps")),
+                                       p(a("dplyr", href = "https://cran.r-project.org/web/packages/dplyr/vignettes/dplyr.html", taget = "dplyr"))
                                      )
                             ),
                             
